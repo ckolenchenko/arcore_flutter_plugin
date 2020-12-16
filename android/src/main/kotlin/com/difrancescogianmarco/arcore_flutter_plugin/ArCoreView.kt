@@ -328,6 +328,7 @@ class ArCoreView(val activity: Activity, context: Context, messenger: BinaryMess
         if (enablePlaneRenderer != null && !enablePlaneRenderer) {
             debugLog(" The plane renderer (enablePlaneRenderer) is set to " + enablePlaneRenderer.toString())
             arSceneView!!.planeRenderer.isVisible = false
+            arSceneView!!.planeRenderer.isEnabled = false
         }
         
         result.success(null)
