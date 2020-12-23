@@ -236,6 +236,9 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
                     config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
                     config?.planeFindingMode = Config.PlaneFindingMode.DISABLED
                     config.instantPlacementMode = Config.InstantPlacementMode.DISABLED
+                    config.cloudAnchorMode = Config.CloudAnchorMode.DISABLED
+                    config.depthMode = Config.DepthMode.DISABLED
+                    config.lightEstimationMode = Config.LightEstimationMode.DISABLED
                     session.configure(config)
                     arSceneView?.setupSession(session)
                 }
@@ -264,6 +267,9 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
             config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
             config?.planeFindingMode = Config.PlaneFindingMode.DISABLED
             config.instantPlacementMode = Config.InstantPlacementMode.DISABLED
+            config.cloudAnchorMode = Config.CloudAnchorMode.DISABLED
+            config.depthMode = Config.DepthMode.DISABLED
+            config.lightEstimationMode = Config.LightEstimationMode.DISABLED
             bytes?.let {
                 if (useSingleImage) {
                     if (!addImageToAugmentedImageDatabase(config, bytes)) {
@@ -291,6 +297,9 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
             config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
             config?.planeFindingMode = Config.PlaneFindingMode.DISABLED
             config.instantPlacementMode = Config.InstantPlacementMode.DISABLED
+            config.cloudAnchorMode = Config.CloudAnchorMode.DISABLED
+            config.depthMode = Config.DepthMode.DISABLED
+            config.lightEstimationMode = Config.LightEstimationMode.DISABLED
             bytesMap?.let {
                 if (!addMultipleImagesToAugmentedImageDatabase(config, bytesMap)) {
                     throw Exception("Could not setup augmented image database")
