@@ -23,6 +23,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.util.*
+import android.os.Handler;
 
 class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger: BinaryMessenger, id: Int, val useSingleImage: Boolean, debug: Boolean) : BaseArCoreView(activity, context, messenger, id, debug) {
 
@@ -67,7 +68,6 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
                         }
                         
                         sendAugmentedImageToFlutter(augmentedImage)
-                        arSceneView?.session?.update()
                     }
 
                     TrackingState.STOPPED -> {
@@ -198,15 +198,11 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
                 "resume" -> {
                     debugLog("resume")
                     onResume()
-                    //arSceneView?.session?.update()
-                    //sceneUpdateListener = initSceneUpdateListener()
-                    //arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
                 }
                 "pause" -> {
                     debugLog("Pausing ARCore now")
                     arSceneView?.session?.pause()
                     arSceneView?.scene?.removeOnUpdateListener(sceneUpdateListener)
-                    //sceneUpdateListener = null
                     onPause()
                 }
                 else -> {
@@ -220,7 +216,6 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
     }
 
     private fun arScenViewInit(call: MethodCall, result: MethodChannel.Result) {
-        //arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
         onResume()
         result.success(null)
     }
@@ -268,7 +263,10 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
         try {
             arSceneView?.resume()
             arSceneView?.session?.resume()
-            arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
+            val handler = Handler()
+            handler.postDelayed({
+                arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
+            }, 3000)
             debugLog( "arSceneView.resume()")
         } catch (ex: CameraNotAvailableException) {
             ArCoreUtils.displayError(activity, "Unable to get camera", ex)
