@@ -206,6 +206,10 @@ class ArCoreView(val activity: Activity, context: Context, messenger: BinaryMess
                 debugLog("Resuming ARCore now")
                 onResume()
             }
+            "pause" -> {
+                debugLog("Pausing ARCore now")
+                onPause()
+            }
             "getTrackingState" -> {
                 debugLog("1/3: Requested tracking state, returning that back to Flutter now")
 

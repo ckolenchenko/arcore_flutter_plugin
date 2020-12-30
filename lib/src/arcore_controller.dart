@@ -237,6 +237,10 @@ class ArCoreController {
     _channel?.invokeMethod<void>('resume');
   }
 
+  void pause() {
+    _channel?.invokeMethod<void>('pause');
+  }
+
   Future<void> removeNodeWithIndex(int index) async {
     try {
       return await _channel.invokeMethod('removeARCoreNodeWithIndex', {

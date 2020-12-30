@@ -27,15 +27,18 @@ import java.util.*
 class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger: BinaryMessenger, id: Int, val useSingleImage: Boolean, debug: Boolean) : BaseArCoreView(activity, context, messenger, id, debug) {
 
     private val TAG: String = ArCoreAugmentedImagesView::class.java.name
-    private var sceneUpdateListener: Scene.OnUpdateListener
+    private var sceneUpdateListener: Scene.OnUpdateListener?
     // Augmented image and its associated center pose anchor, keyed by index of the augmented image in
     // the
     // database.
     private val augmentedImageMap = HashMap<Int, Pair<AugmentedImage, AnchorNode>>()
 
     init {
+        sceneUpdateListener = initSceneUpdateListener()
+    }
 
-        sceneUpdateListener = Scene.OnUpdateListener { frameTime ->
+    private fun initSceneUpdateListener() : Scene.OnUpdateListener {
+        return Scene.OnUpdateListener { frameTime ->
 
             val frame = arSceneView?.arFrame ?: return@OnUpdateListener
 
@@ -62,8 +65,9 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
                             anchorNode.anchor = centerPoseAnchor
                             augmentedImageMap[augmentedImage.index] = Pair.create(augmentedImage, anchorNode)
                         }
-
+                        
                         sendAugmentedImageToFlutter(augmentedImage)
+                        arSceneView?.session?.update()
                     }
 
                     TrackingState.STOPPED -> {
@@ -191,6 +195,20 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
                     debugLog( " updateMaterials")
                     dispose()
                 }
+                "resume" -> {
+                    debugLog("resume")
+                    onResume()
+                    //arSceneView?.session?.update()
+                    //sceneUpdateListener = initSceneUpdateListener()
+                    //arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
+                }
+                "pause" -> {
+                    debugLog("Pausing ARCore now")
+                    arSceneView?.session?.pause()
+                    arSceneView?.scene?.removeOnUpdateListener(sceneUpdateListener)
+                    //sceneUpdateListener = null
+                    onPause()
+                }
                 else -> {
                     result.notImplemented()
                 }
@@ -202,7 +220,7 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
     }
 
     private fun arScenViewInit(call: MethodCall, result: MethodChannel.Result) {
-        arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
+        //arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
         onResume()
         result.success(null)
     }
@@ -249,6 +267,8 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
 
         try {
             arSceneView?.resume()
+            arSceneView?.session?.resume()
+            arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
             debugLog( "arSceneView.resume()")
         } catch (ex: CameraNotAvailableException) {
             ArCoreUtils.displayError(activity, "Unable to get camera", ex)
