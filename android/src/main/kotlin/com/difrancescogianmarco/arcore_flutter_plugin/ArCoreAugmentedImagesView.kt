@@ -24,6 +24,15 @@ import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.util.*
 import android.os.Handler;
+// import kotlinx.coroutines.Dispatchers
+// import kotlinx.coroutines.withContext
+// import kotlinx.coroutines.CoroutineScope
+// import kotlin.coroutines.CoroutineContext
+// import kotlinx.coroutines.launch
+// import kotlinx.coroutines.Job
+// import kotlinx.coroutines.GlobalScope
+// import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger: BinaryMessenger, id: Int, val useSingleImage: Boolean, debug: Boolean) : BaseArCoreView(activity, context, messenger, id, debug) {
 
@@ -336,7 +345,13 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
         for ((key, value) in bytesMap) {
             val augmentedImageBitmap = loadAugmentedImageBitmap(value)
             try {
-                augmentedImageDatabase.addImage(key, augmentedImageBitmap)
+                GlobalScope.launch(Dispatchers.Main) {
+                    val job = GlobalScope.launch { 
+                        augmentedImageDatabase.addImage(key, augmentedImageBitmap)
+                    }
+                    job.join() 
+                }
+                //augmentedImageDatabase.addImage(key, augmentedImageBitmap)
             } catch (ex: Exception) {
                 debugLog("Image with the title $key cannot be added to the database. " +
                         "The exception was thrown: " + ex?.toString())
