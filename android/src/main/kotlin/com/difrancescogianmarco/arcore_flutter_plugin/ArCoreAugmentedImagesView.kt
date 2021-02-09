@@ -345,7 +345,7 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
         for ((key, value) in bytesMap) {
             val augmentedImageBitmap = loadAugmentedImageBitmap(value)
             try {
-                GlobalScope.launch(Dispatchers.Main) {
+                runBlocking {
                     val job = GlobalScope.launch { 
                         augmentedImageDatabase.addImage(key, augmentedImageBitmap)
                     }
