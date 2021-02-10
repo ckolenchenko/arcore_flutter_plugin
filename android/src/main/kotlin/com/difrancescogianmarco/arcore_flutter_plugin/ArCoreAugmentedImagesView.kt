@@ -24,24 +24,20 @@ import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.util.*
 import android.os.Handler;
-// import kotlinx.coroutines.Dispatchers
-// import kotlinx.coroutines.withContext
-// import kotlinx.coroutines.CoroutineScope
-// import kotlin.coroutines.CoroutineContext
-// import kotlinx.coroutines.launch
-// import kotlinx.coroutines.Job
-// import kotlinx.coroutines.GlobalScope
-// import kotlinx.coroutines.runBlocking
+import com.google.ar.core.exceptions.*
+import com.google.ar.core.*
 import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 
-class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger: BinaryMessenger, id: Int, val useSingleImage: Boolean, debug: Boolean) : BaseArCoreView(activity, context, messenger, id, debug) {
+class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger: BinaryMessenger, id: Int, val useSingleImage: Boolean, debug: Boolean) : BaseArCoreView(activity, context, messenger, id, debug), CoroutineScope {
 
     private val TAG: String = ArCoreAugmentedImagesView::class.java.name
     private var sceneUpdateListener: Scene.OnUpdateListener?
-    // Augmented image and its associated center pose anchor, keyed by index of the augmented image in
-    // the
-    // database.
     private val augmentedImageMap = HashMap<Int, Pair<AugmentedImage, AnchorNode>>()
+
+    private var job: Job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     init {
         sceneUpdateListener = initSceneUpdateListener()
@@ -202,6 +198,7 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
                 }
                 "dispose" -> {
                     debugLog( " updateMaterials")
+                    job.cancel()
                     dispose()
                 }
                 "resume" -> {
@@ -328,37 +325,38 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
             config.depthMode = Config.DepthMode.DISABLED
             config.lightEstimationMode = Config.LightEstimationMode.DISABLED
             bytesMap?.let {
-                if (!addMultipleImagesToAugmentedImageDatabase(config, bytesMap)) {
-                    throw Exception("Could not setup augmented image database")
-                }
+                addMultipleImagesToAugmentedImageDatabase(config, bytesMap, session)
             }
-            session.configure(config)
-            arSceneView?.setupSession(session)
         } catch (ex: Exception) {
             debugLog( ex.localizedMessage)
         }
     }
 
-    private fun addMultipleImagesToAugmentedImageDatabase(config: Config, bytesMap: Map<String, ByteArray>): Boolean {
+    private fun addMultipleImagesToAugmentedImageDatabase(config: Config, bytesMap: Map<String, ByteArray>, session: Session) {
         debugLog( "addImageToAugmentedImageDatabase")
         val augmentedImageDatabase = AugmentedImageDatabase(arSceneView?.session)
-        for ((key, value) in bytesMap) {
-            val augmentedImageBitmap = loadAugmentedImageBitmap(value)
-            try {
-                runBlocking {
-                    val job = GlobalScope.launch { 
+
+        launch {
+            val operation = async(Dispatchers.Default) {
+                for ((key, value) in bytesMap) {
+                    val augmentedImageBitmap = loadAugmentedImageBitmap(value)
+                    try {
                         augmentedImageDatabase.addImage(key, augmentedImageBitmap)
-                    }
-                    job.join() 
-                }
-                //augmentedImageDatabase.addImage(key, augmentedImageBitmap)
-            } catch (ex: Exception) {
-                debugLog("Image with the title $key cannot be added to the database. " +
+                    } catch (ex: Exception) {
+                        debugLog("Image with the title $key cannot be added to the database. " +
                         "The exception was thrown: " + ex?.toString())
+                    }
+                }
+                config.augmentedImageDatabase = augmentedImageDatabase
+                session.configure(config)
+                arSceneView?.setupSession(session)
             }
+            operation.await()
         }
-        config.augmentedImageDatabase = augmentedImageDatabase
-        return augmentedImageDatabase?.getNumImages() != 0 ?: return false
+    }
+
+    suspend fun addImage(augmentedImageDatabase: AugmentedImageDatabase, key: String, augmentedImageBitmap: Bitmap?) = withContext(Dispatchers.Default) {
+        augmentedImageDatabase.addImage(key, augmentedImageBitmap)
     }
 
     private fun addImageToAugmentedImageDatabase(config: Config, bytes: ByteArray): Boolean {
@@ -381,28 +379,6 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
             debugLog(ex.localizedMessage)
             return false
         }
-
-        // If the physical size of the image is known, you can instead use:
-        //     augmentedImageDatabase.addImage("image_name", augmentedImageBitmap, widthInMeters);
-        // This will improve the initial detection speed. ARCore will still actively estimate the
-        // physical size of the image as it is viewed from multiple viewpoints.
-        /* } else {
-             // This is an alternative way to initialize an AugmentedImageDatabase instance,
-             // load a pre-existing augmented image database.
-             try {
- //                getAssets().open("sample_database.imgdb").use({ `is` -> augmentedImageDatabase = AugmentedImageDatabase.deserialize(session, `is`) })
- //                val inputStream = ByteArrayInputStream(bytes)
- //                augmentedImageDatabase = AugmentedImageDatabase.deserialize(arSceneView?.session, inputStream)
-                 augmentedImageDatabase = null
-                 return false
-             } catch (e: IOException) {
-                 Log.e(TAG, "IO exception loading augmented image database.", e)
-                 return false
-             }*/
-
-//        }
-
-
     }
 
     private fun useExistingAugmentedImageDatabase(config: Config, bytes: ByteArray): Boolean {
