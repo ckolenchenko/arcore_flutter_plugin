@@ -71,8 +71,9 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
                             anchorNode.anchor = centerPoseAnchor
                             augmentedImageMap[augmentedImage.index] = Pair.create(augmentedImage, anchorNode)
                         }
-                        
-                        sendAugmentedImageToFlutter(augmentedImage)
+                        if (augmentedImage.trackingMethod.ordinal == 1) {
+                            sendAugmentedImageToFlutter(augmentedImage)
+                        }
                     }
 
                     TrackingState.STOPPED -> {
@@ -103,34 +104,6 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
             methodChannel.invokeMethod("onTrackingImage", map)
         }
     }
-
-/*    fun setImage(image: AugmentedImage, anchorNode: AnchorNode) {
-        if (!mazeRenderable.isDone) {
-            Log.d(TAG, "loading maze renderable still in progress. Wait to render again")
-            CompletableFuture.allOf(mazeRenderable)
-                    .thenAccept { aVoid: Void -> setImage(image, anchorNode) }
-                    .exceptionally { throwable ->
-                        Log.e(TAG, "Exception loading", throwable)
-                        null
-                    }
-            return
-        }
-
-        // Set the anchor based on the center of the image.
-        // anchorNode.anchor = image.createAnchor(image.centerPose)
-
-        val mazeNode = Node()
-        mazeNode.setParent(anchorNode)
-        mazeNode.renderable = mazeRenderable.getNow(null)
-
-        *//* // Make sure longest edge fits inside the image
-         val maze_edge_size = 492.65f
-         val max_image_edge = Math.max(image.extentX, image.extentZ)
-         val maze_scale = max_image_edge / maze_edge_size
- 
-         // Scale Y extra 10 times to lower the wall of maze
-         mazeNode.localScale = Vector3(maze_scale, maze_scale * 0.1f, maze_scale)*//*
-    }*/
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         if (isSupportedDevice) {
@@ -269,10 +242,10 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
         try {
             arSceneView?.resume()
             arSceneView?.session?.resume()
-            val handler = Handler()
-            handler.postDelayed({
+            launch {       
+                delay(7500)
                 arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
-            }, 3000)
+            }
             debugLog( "arSceneView.resume()")
         } catch (ex: CameraNotAvailableException) {
             ArCoreUtils.displayError(activity, "Unable to get camera", ex)
