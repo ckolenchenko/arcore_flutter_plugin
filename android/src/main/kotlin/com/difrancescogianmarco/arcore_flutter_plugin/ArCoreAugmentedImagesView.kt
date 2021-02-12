@@ -243,7 +243,7 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
             arSceneView?.resume()
             arSceneView?.session?.resume()
             launch {       
-                delay(7500)
+                delay(3500)
                 arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
             }
             debugLog( "arSceneView.resume()")
