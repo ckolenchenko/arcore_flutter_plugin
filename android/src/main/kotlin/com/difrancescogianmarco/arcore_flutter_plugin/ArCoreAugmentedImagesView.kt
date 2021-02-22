@@ -243,7 +243,7 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
             arSceneView?.resume()
             arSceneView?.session?.resume()
             launch {       
-                delay(3500)
+                delay(5000)
                 arSceneView?.scene?.addOnUpdateListener(sceneUpdateListener)
             }
             debugLog( "arSceneView.resume()")
@@ -333,14 +333,6 @@ class ArCoreAugmentedImagesView(activity: Activity, context: Context, messenger:
     }
 
     private fun addImageToAugmentedImageDatabase(config: Config, bytes: ByteArray): Boolean {
-
-        // There are two ways to configure an AugmentedImageDatabase:
-        // 1. Add Bitmap to DB directly
-        // 2. Load a pre-built AugmentedImageDatabase
-        // Option 2) has
-        // * shorter setup time
-        // * doesn't require images to be packaged in apk.
-//        if (useSingleImage && singleImageBytes != null) {
         debugLog( "addImageToAugmentedImageDatabase")
         try{
             val augmentedImageBitmap = loadAugmentedImageBitmap(bytes) ?: return false
