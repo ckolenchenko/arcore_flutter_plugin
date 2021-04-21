@@ -217,6 +217,10 @@ class ArCoreView(val activity: Activity, context: Context, messenger: BinaryMess
                 debugLog("2/3: Tracking state is " + trState.toString())
                 methodChannel.invokeMethod("getTrackingState", trState.toString())
             }
+            "togglePlaneRenderer" -> {
+                debugLog(" Toggle planeRenderer visibility" )
+                arSceneView!!.planeRenderer.isVisible = !arSceneView!!.planeRenderer.isVisible
+            }
             else -> {
             }
         }
