@@ -11,9 +11,9 @@ class ObjectWithTextureAndRotation extends StatefulWidget {
 
 class _ObjectWithTextureAndRotationState
     extends State<ObjectWithTextureAndRotation> {
-  ArCoreController arCoreController;
+  late ArCoreController arCoreController;
 
-  ArCoreRotatingNode node;
+  late ArCoreRotatingNode node;
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +86,9 @@ class RotationSlider extends StatefulWidget {
   final ValueChanged<double> onDegreesPerSecondChange;
 
   const RotationSlider(
-      {Key key,
-      this.degreesPerSecondInitialValue,
-      this.onDegreesPerSecondChange})
+      {Key? key,
+      required this.degreesPerSecondInitialValue,
+      required this.onDegreesPerSecondChange})
       : super(key: key);
 
   @override
@@ -96,7 +96,7 @@ class RotationSlider extends StatefulWidget {
 }
 
 class _RotationSliderState extends State<RotationSlider> {
-  double degreesPerSecond;
+  late double degreesPerSecond;
 
   @override
   void initState() {

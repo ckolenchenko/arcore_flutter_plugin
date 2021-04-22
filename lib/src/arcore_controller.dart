@@ -33,10 +33,10 @@ class ArCoreController {
   }
 
   ArCoreController(
-      {int id,
-      this.enableTapRecognizer,
-      this.enablePlaneRenderer,
-      this.enableUpdateListener,
+      {required int id,
+      required this.enableTapRecognizer,
+      required this.enablePlaneRenderer,
+      required this.enableUpdateListener,
       this.debug = false
 //    @required this.onUnsupported,
       }) {
@@ -45,19 +45,19 @@ class ArCoreController {
     init();
   }
 
-  final bool enableUpdateListener;
-  final bool enableTapRecognizer;
-  final bool enablePlaneRenderer;
+  late final bool enableUpdateListener;
+  late final bool enableTapRecognizer;
+  late final bool enablePlaneRenderer;
   final bool debug;
-  MethodChannel _channel;
-  StringResultHandler onError;
-  StringResultHandler onNodeTap;
+  late MethodChannel _channel;
+  late StringResultHandler onError;
+  late StringResultHandler onNodeTap;
 
 //  UnsupportedHandler onUnsupported;
-  ArCoreHitResultHandler onPlaneTap;
-  ArCorePlaneHandler onPlaneDetected;
+  late ArCoreHitResultHandler onPlaneTap;
+  late ArCorePlaneHandler onPlaneDetected;
   String trackingState = '';
-  ArCoreAugmentedImageTrackingHandler onTrackingImage;
+  late ArCoreAugmentedImageTrackingHandler onTrackingImage;
 
   init() async {
     try {
@@ -134,7 +134,7 @@ class ArCoreController {
     return Future.value();
   }
 
-  Future<void> addArCoreNode(ArCoreNode node, {String parentNodeName}) {
+  Future<void> addArCoreNode(ArCoreNode node, {String? parentNodeName}) {
     assert(node != null);
     final params = _addParentNodeNameToParams(node.toMap(), parentNodeName);
     if (debug) {
@@ -144,17 +144,22 @@ class ArCoreController {
     return _channel.invokeMethod('addArCoreNode', params);
   }
 
-
   Future<String> togglePlaneRenderer() async {
-    return _channel.invokeMethod('togglePlaneRenderer');
+    String result = "";
+    _channel
+        .invokeMethod('togglePlaneRenderer')
+        .then((value) => result = value);
+    return result;
   }
 
   Future<String> getTrackingState() async {
-    return _channel.invokeMethod('getTrackingState');
+    String result = "";
+    _channel.invokeMethod('getTrackingState').then((value) => result = value);
+    return result;
   }
 
   addArCoreNodeToAugmentedImage(ArCoreNode node, int index,
-      {String parentNodeName}) {
+      {String? parentNodeName}) {
     assert(node != null);
 
     final params = _addParentNodeNameToParams(node.toMap(), parentNodeName);
@@ -163,7 +168,7 @@ class ArCoreController {
   }
 
   Future<void> addArCoreNodeWithAnchor(ArCoreNode node,
-      {String parentNodeName}) {
+      {String? parentNodeName}) {
     assert(node != null);
     final params = _addParentNodeNameToParams(node.toMap(), parentNodeName);
     if (debug) {
@@ -176,20 +181,19 @@ class ArCoreController {
     return _channel.invokeMethod('addArCoreNodeWithAnchor', params);
   }
 
-  Future<void> removeNode({@required String nodeName}) {
-    assert(nodeName != null);
+  Future<void> removeNode({required String nodeName}) {
     return _channel.invokeMethod('removeARCoreNode', {'nodeName': nodeName});
   }
 
   Map<String, dynamic> _addParentNodeNameToParams(
-      Map geometryMap, String parentNodeName) {
+      Map<String, dynamic> geometryMap, String? parentNodeName) {
     if (parentNodeName?.isNotEmpty ?? false)
       geometryMap['parentNodeName'] = parentNodeName;
     return geometryMap;
   }
 
   void _addListeners(ArCoreNode node) {
-    node.position.addListener(() => _handlePositionChanged(node));
+    node.position?.addListener(() => _handlePositionChanged(node));
     node?.shape?.materials?.addListener(() => _updateMaterials(node));
 
     if (node is ArCoreRotatingNode) {
@@ -198,8 +202,13 @@ class ArCoreController {
   }
 
   void _handlePositionChanged(ArCoreNode node) {
-    _channel.invokeMethod<void>('positionChanged',
-        _getHandlerParams(node, convertVector3ToMap(node.position.value)));
+    if (node.position != null) {
+      Map<String, double>? map = convertVector3ToMap(node.position!.value);
+      if (map != null) {
+        _channel.invokeMethod<void>(
+            'positionChanged', _getHandlerParams(node, map));
+      }
+    }
   }
 
   void _handleRotationChanged(ArCoreRotatingNode node) {
@@ -208,8 +217,10 @@ class ArCoreController {
   }
 
   void _updateMaterials(ArCoreNode node) {
-    _channel.invokeMethod<void>(
-        'updateMaterials', _getHandlerParams(node, node.shape.toMap()));
+    if (node.shape != null) {
+      _channel.invokeMethod<void>(
+          'updateMaterials', _getHandlerParams(node, node.shape!.toMap()));
+    }
   }
 
   Map<String, dynamic> _getHandlerParams(
@@ -219,23 +230,20 @@ class ArCoreController {
     return values;
   }
 
-  Future<void> loadSingleAugmentedImage({@required Uint8List bytes}) {
-    assert(bytes != null);
+  Future<void> loadSingleAugmentedImage({required Uint8List bytes}) {
     return _channel.invokeMethod('load_single_image_on_db', {
       'bytes': bytes,
     });
   }
 
   Future<void> loadMultipleAugmentedImage(
-      {@required Map<String, Uint8List> bytesMap}) {
-    assert(bytesMap != null);
+      {required Map<String, Uint8List> bytesMap}) {
     return _channel.invokeMethod('load_multiple_images_on_db', {
       'bytesMap': bytesMap,
     });
   }
 
-  Future<void> loadAugmentedImagesDatabase({@required Uint8List bytes}) {
-    assert(bytes != null);
+  Future<void> loadAugmentedImagesDatabase({required Uint8List bytes}) {
     return _channel.invokeMethod('load_augmented_images_database', {
       'bytes': bytes,
     });

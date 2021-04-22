@@ -8,8 +8,8 @@ class AutoDetectPlane extends StatefulWidget {
 }
 
 class _AutoDetectPlaneState extends State<AutoDetectPlane> {
-  ArCoreController arCoreController;
-  ArCoreNode node;
+  late ArCoreController arCoreController;
+  late ArCoreNode node;
 
   @override
   Widget build(BuildContext context) {

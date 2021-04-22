@@ -7,7 +7,9 @@ import '../arcore_flutter_plugin.dart';
 
 class ArCoreFaceController {
   ArCoreFaceController(
-      {int id, this.enableAugmentedFaces, this.debug = false}) {
+      {required int id,
+      required this.enableAugmentedFaces,
+      this.debug = false}) {
     _channel = MethodChannel('arcore_flutter_plugin_$id');
     _channel.setMethodCallHandler(_handleMethodCalls);
     init();
@@ -15,8 +17,8 @@ class ArCoreFaceController {
 
   final bool enableAugmentedFaces;
   final bool debug;
-  MethodChannel _channel;
-  StringResultHandler onError;
+  late MethodChannel _channel;
+  late StringResultHandler onError;
 
   init() async {
     try {
@@ -47,8 +49,7 @@ class ArCoreFaceController {
   }
 
   Future<void> loadMesh(
-      {@required Uint8List textureBytes, String skin3DModelFilename}) {
-    assert(textureBytes != null);
+      {required Uint8List textureBytes, required String skin3DModelFilename}) {
     return _channel.invokeMethod('loadMesh', {
       'textureBytes': textureBytes,
       'skin3DModelFilename': skin3DModelFilename
@@ -56,6 +57,6 @@ class ArCoreFaceController {
   }
 
   void dispose() {
-    _channel?.invokeMethod<void>('dispose');
+    _channel.invokeMethod<void>('dispose');
   }
 }

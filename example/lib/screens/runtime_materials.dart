@@ -10,8 +10,8 @@ class RuntimeMaterials extends StatefulWidget {
 }
 
 class _RuntimeMaterialsState extends State<RuntimeMaterials> {
-  ArCoreController arCoreController;
-  ArCoreNode sphereNode;
+  late ArCoreController arCoreController;
+  late ArCoreNode sphereNode;
 
   double metallic = 0.0;
   double roughness = 0.4;
@@ -115,7 +115,7 @@ class _RuntimeMaterialsState extends State<RuntimeMaterials> {
       roughness: roughness,
       reflectance: reflectance,
     );
-    sphereNode.shape.materials.value = [material];
+    sphereNode.shape?.materials.value = [material];
   }
 
   @override
@@ -136,15 +136,15 @@ class SphereControl extends StatefulWidget {
   final ValueChanged<double> onReflectanceChange;
 
   const SphereControl(
-      {Key key,
-      this.initialRoughnessValue,
-      this.initialReflectanceValue,
-      this.initialMetallicValue,
-      this.initialColor,
-      this.onColorChange,
-      this.onMetallicChange,
-      this.onRoughnessChange,
-      this.onReflectanceChange})
+      {Key? key,
+      required this.initialRoughnessValue,
+      required this.initialReflectanceValue,
+      required this.initialMetallicValue,
+      required this.initialColor,
+      required this.onColorChange,
+      required this.onMetallicChange,
+      required this.onRoughnessChange,
+      required this.onReflectanceChange})
       : super(key: key);
 
   @override
@@ -152,10 +152,10 @@ class SphereControl extends StatefulWidget {
 }
 
 class _SphereControlState extends State<SphereControl> {
-  double metallicValue;
-  double roughnessValue;
-  double reflectanceValue;
-  Color color;
+  double? metallicValue;
+  double? roughnessValue;
+  double? reflectanceValue;
+  Color? color;
 
   @override
   void initState() {
@@ -200,8 +200,9 @@ class _SphereControlState extends State<SphereControl> {
               Checkbox(
                 value: metallicValue == 1.0,
                 onChanged: (value) {
-                  metallicValue = value ? 1.0 : 0.0;
-                  widget.onMetallicChange(metallicValue);
+                  metallicValue = value == true ? 1.0 : 0.0;
+                  widget.onMetallicChange(
+                      metallicValue ?? widget.initialMetallicValue);
                   setState(() {});
                 },
               )
@@ -212,11 +213,12 @@ class _SphereControlState extends State<SphereControl> {
               Text("Roughness"),
               Expanded(
                 child: Slider(
-                  value: roughnessValue,
+                  value: roughnessValue ?? widget.initialRoughnessValue,
                   divisions: 10,
                   onChangeEnd: (value) {
                     roughnessValue = value;
-                    widget.onRoughnessChange(roughnessValue);
+                    widget.onRoughnessChange(
+                        roughnessValue ?? widget.initialRoughnessValue);
                   },
                   onChanged: (double value) {
                     setState(() {
@@ -232,11 +234,12 @@ class _SphereControlState extends State<SphereControl> {
               Text("Reflectance"),
               Expanded(
                 child: Slider(
-                  value: reflectanceValue,
+                  value: reflectanceValue ?? widget.initialReflectanceValue,
                   divisions: 10,
                   onChangeEnd: (value) {
                     reflectanceValue = value;
-                    widget.onReflectanceChange(reflectanceValue);
+                    widget.onReflectanceChange(
+                        reflectanceValue ?? widget.initialReflectanceValue);
                   },
                   onChanged: (double value) {
                     setState(() {
