@@ -10,7 +10,7 @@ abstract class ArCoreShape {
   Map<String, dynamic> toMap() => <String, dynamic>{
         'dartType': runtimeType.toString(),
         'materials': materials != null
-            ? materials?.value?.map((m) => m.toMap())?.toList()
+            ? materials.value.map((m) => m.toMap()).toList()
             : null,
       }..removeWhere((String k, dynamic v) => v == null);
 }

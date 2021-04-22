@@ -76,7 +76,9 @@ class _ObjectWithTextureAndRotationState
 
   @override
   void dispose() {
-    arCoreController?.dispose();
+    if (arCoreController != null) {
+      arCoreController.dispose();
+    }
     super.dispose();
   }
 }

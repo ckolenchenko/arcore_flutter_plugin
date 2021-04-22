@@ -194,7 +194,7 @@ class ArCoreController {
 
   void _addListeners(ArCoreNode node) {
     node.position?.addListener(() => _handlePositionChanged(node));
-    node?.shape?.materials?.addListener(() => _updateMaterials(node));
+    node.shape?.materials.addListener(() => _updateMaterials(node));
 
     if (node is ArCoreRotatingNode) {
       node.degreesPerSecond.addListener(() => _handleRotationChanged(node));
@@ -250,11 +250,11 @@ class ArCoreController {
   }
 
   void dispose() {
-    _channel?.invokeMethod<void>('dispose');
+    _channel.invokeMethod<void>('dispose');
   }
 
   void resume() {
-    _channel?.invokeMethod<void>('resume');
+    _channel.invokeMethod<void>('resume');
   }
 
   Future<void> removeNodeWithIndex(int index) async {
