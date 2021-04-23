@@ -11,9 +11,9 @@ class ObjectWithTextureAndRotation extends StatefulWidget {
 
 class _ObjectWithTextureAndRotationState
     extends State<ObjectWithTextureAndRotation> {
-  ArCoreController arCoreController;
+  late ArCoreController arCoreController;
 
-  ArCoreRotatingNode node;
+  late ArCoreRotatingNode node;
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +45,7 @@ class _ObjectWithTextureAndRotationState
   }
 
   Future _addSphere(ArCoreController controller) async {
-    final ByteData textureBytes = await rootBundle.load('assets/italia.png');
-
+    final ByteData textureBytes = await rootBundle.load('assets/earth.jpg');
     final material = ArCoreMaterial(
       color: Color.fromARGB(120, 66, 134, 244),
       textureBytes: textureBytes.buffer.asUint8List(),
@@ -76,7 +75,9 @@ class _ObjectWithTextureAndRotationState
 
   @override
   void dispose() {
-    arCoreController?.dispose();
+    if (arCoreController != null) {
+      arCoreController.dispose();
+    }
     super.dispose();
   }
 }
@@ -86,9 +87,9 @@ class RotationSlider extends StatefulWidget {
   final ValueChanged<double> onDegreesPerSecondChange;
 
   const RotationSlider(
-      {Key key,
-      this.degreesPerSecondInitialValue,
-      this.onDegreesPerSecondChange})
+      {Key? key,
+      required this.degreesPerSecondInitialValue,
+      required this.onDegreesPerSecondChange})
       : super(key: key);
 
   @override
@@ -96,7 +97,7 @@ class RotationSlider extends StatefulWidget {
 }
 
 class _RotationSliderState extends State<RotationSlider> {
-  double degreesPerSecond;
+  late double degreesPerSecond;
 
   @override
   void initState() {
