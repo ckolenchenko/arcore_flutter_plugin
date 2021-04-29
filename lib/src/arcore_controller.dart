@@ -57,7 +57,7 @@ class ArCoreController {
   late ArCoreHitResultHandler onPlaneTap;
   late ArCorePlaneHandler onPlaneDetected;
   String trackingState = '';
-  late ArCoreAugmentedImageTrackingHandler onTrackingImage;
+  late ArCoreAugmentedImageTrackingHandler? onTrackingImage;
 
   init() async {
     try {
@@ -117,7 +117,7 @@ class ArCoreController {
         }
         final arCoreAugmentedImage =
             ArCoreAugmentedImage.fromMap(call.arguments);
-        onTrackingImage(arCoreAugmentedImage);
+        if (onTrackingImage != null) onTrackingImage!(arCoreAugmentedImage);
         break;
       case 'togglePlaneRenderer':
         if (debug) {
