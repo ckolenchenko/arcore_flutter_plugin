@@ -11,13 +11,13 @@ class ArCoreReferenceNode extends ArCoreNode {
   final String? objectUrl;
 
   ArCoreReferenceNode({
-    required String name,
+    String? name,
     this.object3DFileName,
     this.objectUrl,
     List<ArCoreNode> children = const [],
-    required Vector3 position,
+    Vector3? position,
     Vector3? scale,
-    required Vector4 rotation,
+    Vector4? rotation,
   }) : super(
             name: name,
             children: children,

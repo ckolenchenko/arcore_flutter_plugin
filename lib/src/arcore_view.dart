@@ -36,7 +36,7 @@ class ArCoreView extends StatefulWidget {
 class _ArCoreViewState extends State<ArCoreView> with WidgetsBindingObserver {
   @override
   void initState() {
-    WidgetsBinding?.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
@@ -59,21 +59,18 @@ class _ArCoreViewState extends State<ArCoreView> with WidgetsBindingObserver {
   }
 
   void _onPlatformViewCreated(int id) {
-    if (widget.onArCoreViewCreated == null) {
-      return;
-    }
     widget.onArCoreViewCreated(ArCoreController(
-        id: id,
-        enableTapRecognizer: widget.enableTapRecognizer,
-        enableUpdateListener: widget.enableUpdateListener,
-        enablePlaneRenderer: widget.enablePlaneRenderer
+      id: id,
+      enableTapRecognizer: widget.enableTapRecognizer,
+      enableUpdateListener: widget.enableUpdateListener,
+      enablePlaneRenderer: widget.enablePlaneRenderer,
 //      onUnsupported: widget.onArCoreUnsupported,
-        ));
+    ));
   }
 
   @override
   void dispose() {
-    WidgetsBinding?.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 }

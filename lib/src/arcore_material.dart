@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 class ArCoreMaterial {
-  final Color color;
+  final Color? color;
 
 //  final String texture;
 
@@ -31,13 +31,13 @@ class ArCoreMaterial {
     this.metallic,
     this.roughness,
     this.reflectance,
-    required this.color,
+    this.color,
 //    this.texture,
     this.textureBytes,
   });
 
   Map<String, dynamic> toMap() => <String, dynamic>{
-        'color': [color.alpha, color.red, color.green, color.blue],
+        'color': [color!.alpha, color!.red, color!.green, color!.blue],
 //        'texture': this.texture,
         'textureBytes': this.textureBytes,
         'metallic': this.metallic,

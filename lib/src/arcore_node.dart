@@ -1,10 +1,10 @@
 import 'package:arcore_flutter_plugin/src/arcore_image.dart';
+import 'package:arcore_flutter_plugin/src/shape/arcore_shape.dart';
+import 'package:arcore_flutter_plugin/src/utils/random_string.dart'
+    as random_string;
 import 'package:arcore_flutter_plugin/src/utils/vector_utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:vector_math/vector_math_64.dart';
-import 'package:arcore_flutter_plugin/src/utils/random_string.dart'
-    as random_string;
-import 'package:arcore_flutter_plugin/src/shape/arcore_shape.dart';
 
 class ArCoreNode {
   ArCoreNode({
@@ -21,7 +21,7 @@ class ArCoreNode {
         rotation = rotation != null ? ValueNotifier(rotation) : null,
         assert(!(shape != null && image != null));
 
-  final List<ArCoreNode> children;
+  final List<ArCoreNode>? children;
 
   final ArCoreShape? shape;
 
@@ -31,7 +31,7 @@ class ArCoreNode {
 
   final ValueNotifier<Vector4>? rotation;
 
-  final String name;
+  final String? name;
 
   final ArCoreImage? image;
 
@@ -44,6 +44,6 @@ class ArCoreNode {
         'name': name,
         'image': image?.toMap(),
         'children':
-            this.children.map((arCoreNode) => arCoreNode.toMap()).toList(),
+            this.children?.map((arCoreNode) => arCoreNode.toMap()).toList(),
       }..removeWhere((String k, dynamic v) => v == null);
 }

@@ -1,5 +1,5 @@
-import 'package:arcore_flutter_plugin/src/shape/arcore_shape.dart';
 import 'package:arcore_flutter_plugin/src/arcore_material.dart';
+import 'package:arcore_flutter_plugin/src/shape/arcore_shape.dart';
 
 class ArCoreCylinder extends ArCoreShape {
   ArCoreCylinder({
@@ -15,7 +15,7 @@ class ArCoreCylinder extends ArCoreShape {
 
   @override
   Map<String, dynamic> toMap() => <String, dynamic>{
-        'height': this.radius,
-        'radius': this.height,
+        'height': this.height,
+        'radius': this.radius,
       }..addAll(super.toMap());
 }

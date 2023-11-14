@@ -1,21 +1,18 @@
 import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 import '../arcore_flutter_plugin.dart';
 
 class ArCoreFaceController {
   ArCoreFaceController(
-      {required int id,
-      required this.enableAugmentedFaces,
-      this.debug = false}) {
+      {int? id, this.enableAugmentedFaces, this.debug = false}) {
     _channel = MethodChannel('arcore_flutter_plugin_$id');
     _channel.setMethodCallHandler(_handleMethodCalls);
     init();
   }
 
-  final bool enableAugmentedFaces;
+  final bool? enableAugmentedFaces;
   final bool debug;
   late MethodChannel _channel;
   late StringResultHandler onError;
@@ -36,9 +33,7 @@ class ArCoreFaceController {
     }
     switch (call.method) {
       case 'onError':
-        if (onError != null) {
-          onError(call.arguments);
-        }
+        onError(call.arguments);
         break;
       default:
         if (debug) {
